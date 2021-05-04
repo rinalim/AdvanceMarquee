@@ -41,6 +41,13 @@ def get_device():
                      gpio_LIGHT=18
         )
         return device
+    elif SCREEN == "waveshare35a":
+        from luma.lcd.device import ili9486
+        serial = spi(port=0, device=0, gpio_DC=24, gpio_RST=25,
+             reset_hold_time=0.2, reset_release_time=0.2)
+        device = ili9486(serial, active_low=False, width=320, height=480,
+                 rotate=1, bus_speed_hz=31880000)
+        return device
     elif SCREEN == "waveshare35b":
         from luma.lcd.device import ili9486
         serial = spi(port=0, device=0, gpio_DC=24, gpio_RST=25,
@@ -51,20 +58,23 @@ def get_device():
     else:
         print("Unkown screen type")
         sys.exit(0)
+        
+def show_img(path, os, device):
+    img = Image.open(img_path).convert("RGBA")
+    if device.width != img.width or device.height == img.height:
+        img.thumbnail(device.size, Image.ANTIALIAS)
+    background = Image.new("RGB", device.size, "black")
+    posn = ((device.width - img.width) // 2, (device.height - img.height) // 2)
+    background.paste(img, posn)
+    img = ImageOps.invert(background)
+    return img
 
 os = get_os()
 device = get_device()
 
 try:
     img_path = str(Path(__file__).resolve().parent.joinpath('', sys.argv[1]))
-    logo = Image.open(img_path).convert("RGBA")
-    logo.thumbnail(device.size, Image.ANTIALIAS)
-    #logo = logo.resize(device.size)
-    background = Image.new("RGB", device.size, "black")
-    posn = ((device.width - logo.width) // 2, (device.height - logo.height) // 2)
-    background.paste(logo, posn)
-    img = ImageOps.invert(background)
-
+    show = show_img(img_path, os, device)
     while True:
         device.display(img.convert(device.mode))
         time.sleep(3)
