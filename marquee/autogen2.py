@@ -5,7 +5,7 @@ def run_cmd(cmd):
 # runs whatever in the cmd variable
     p = Popen(cmd, shell=True, stdout=PIPE)
     output = p.communicate()[0]
-    return output
+    return output.decode()
   
 input_dir = sys.argv[1].split("/")[0]
 source_path = "/home/pi/RetroPie/roms/"+input_dir+"/marquee/"
@@ -38,7 +38,7 @@ else:
     for f in file_list:
         if ".png" in f:
             if os.path.isfile(romfile_path+f.replace('png','zip')) == True:
-                print "Romfile found at "+romfile_path+f.replace('png','zip')
+                print("Romfile found at "+romfile_path+f.replace('png','zip'))
             else:
                 continue
             if os.path.isfile(snapshot_path+f) == True:
@@ -50,14 +50,14 @@ else:
                             '" -trim -resize ' + resize + '^ -gravity center -extent ' + resize + 
                             ' bg.png -composite "' + dest_path + f + '"')
                 else:
-                    print 'Resize option error'
+                    print('Resize option error')
             else:
                 run_cmd('cp bg.png ' + dest_path + f) 
             run_cmd('convert "' + source_path + f + '" -trim -resize ' + logo_size + ' logo.png')
             run_cmd('convert logo.png -background black -shadow 80x3+5+5 logo.png -composite shadow.png')
             run_cmd('composite -gravity center shadow.png "./' + dest_path + f + '" "./' + dest_path + f + '"')
-            print 'Generate "' + dest_path + f + '"'
+            print('Generate "' + dest_path + f + '"')
         elif ".jpg" in f:
             run_cmd('convert "' + source_path + f + '" -resize ' + 
                     resize + ' "./' + dest_path + f.replace("jpg","png") + '"')
-            print 'Generate "' + dest_path + f + '"'
+            print('Generate "' + dest_path + f + '"')
