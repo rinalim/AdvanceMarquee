@@ -1,6 +1,7 @@
 import os, sys, time, json
-
+import xml.etree.ElementTree as ET
 from subprocess import *
+from time import *
 from datetime import datetime
 from pathlib import Path
 from PIL import ImageFont, Image, ImageOps
@@ -71,15 +72,85 @@ def show_img(path, os, device):
         mg = ImageOps.invert(background)
     return img
 
+def get_publisher(romname):
+    filename = romname+".zip"
+    publisher = ""
+    for item in root:
+        if filename in item.findtext('path'):
+            publisher = item.findtext('publisher')
+            break
+    if publisher == "":
+        return ""
+    words = publisher.split()
+    return words[0].lower()
+
+def change_img(img_path):
+    show = show_img(img_path, os, device)
+    device.display(img.convert(device.mode))
+
+doc = ET.parse(ROOT+"PieMarquee2/PieMarquee2/gamelist_short.xml")
+root = doc.getroot()
 os = get_os()
 device = get_device()
 
-try:
-    img_path = str(Path(__file__).resolve().parent.joinpath('', sys.argv[1]))
-    show = show_img(img_path, os, device)
-    while True:
-        device.display(img.convert(device.mode))
-        time.sleep(3)
+cur_imgname = ""
+while True:
+    sleep_interval = 1
+    ingame = ""
+    romname = ""
+    sysname = ""
+    pubpath = ""
+    imgpath = ""
+    ps_grep = run_cmd("ps -ef | grep '{emuelecRunEmu' | grep -v 'grep'")
+    if len(ps_grep) > 1: # Ingame
+        ingame="*"
+        words = ps_grep.split()
+        if 'advmame' in ps_grep:
+            sysname = "arcade"
+            romname = words[-1]
+        else:
+            '''
+            pid = words[1]
+            if os.path.isfile("/proc/"+pid+"/cmdline") == False:
+                continue
+            path = run_cmd("strings -n 1 /proc/"+pid+"/cmdline | grep roms")
+            path = path.replace('/home/pi/RetroPie/roms/','')
+            if len(path.replace('"','').split("/")) < 2:
+                continue
+            sysname = path.replace('"','').split("/")[0]
+            '''
+            path = words[6]
+            path = path.replace('/storage/roms/','')
+            sysname = path.split("/")[0]
+            if sysname in arcade:
+                sysname = "arcade"
+            romname = path.split("/")[-1].rsplit('.', 1)[0]
+    else:
+        sysname = "system"
+        romname = "maintitle"
 
-except KeyboardInterrupt:
-    pass
+    #print(ROOT + "marquee/" + sysname  + "/" + romname + ".png")
+    if os.path.isfile(ROOT + "marquee/" + sysname  + "/" + romname + ".png") == True:
+        imgname = sysname + "/" + romname
+        if ingame == "*":
+            publisher = get_publisher(romname)
+            if os.path.isfile(ROOT + "marquee/publisher/" + publisher + ".png") == True:
+                pubpath = ROOT + "marquee/publisher/" + publisher + ".png"
+    elif os.path.isfile(ROOT + "marquee/system/" + sysname + ".png") == True:
+        imgname = "system/" + sysname
+    else:
+        imgname = "system/maintitle"
+
+    if imgname+ingame != cur_imgname: # change marquee images
+        imgpath = "/home/pi/PieMarquee2/marquee/" + imgname + ".png"
+        if ingame == "*":
+            if pubpath != "":
+                imgpath = pubpath+"\n"+imgpath
+        os.system('echo "' + imgpath + '" > /tmp/marquee.txt')
+        sleep(0.2)
+        cur_imgname = imgname+ingame
+
+        change_img(ROOT + "marquee/" + sysname  + "/" + romname + ".png")
+        print(ROOT + "marquee/" + sysname  + "/" + romname + ".png")
+
+    sleep(sleep_interval)
