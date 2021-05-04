@@ -4,7 +4,7 @@ from subprocess import *
 from datetime import datetime
 from pathlib import Path
 from PIL import ImageFont, Image, ImageOps
-
+from resizeimage import resizeimage
 from luma.core.interface.serial import spi
 from luma.core.render import canvas
 
@@ -61,13 +61,14 @@ def get_device():
         
 def show_img(path, os, device):
     img = Image.open(img_path).convert("RGBA")
-    if device.width != img.width or device.height == img.height:
-        img.thumbnail(device.size, Image.ANTIALIAS)
+    if device.width != img.width or device.height != img.height:
+        img = resizeimage.resize_contain(
+                img, device.size, resample=Image.ANTIALIAS, bg_color=(0,0,0,0))
     if SCREEN == "ili9341" or SCREEN == "waveshare35a":
         background = Image.new("RGB", device.size, "black")
         posn = ((device.width - img.width) // 2, (device.height - img.height) // 2)
         background.paste(img, posn)
-        img = ImageOps.invert(background)
+        mg = ImageOps.invert(background)
     return img
 
 os = get_os()
