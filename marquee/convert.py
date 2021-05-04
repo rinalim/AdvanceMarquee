@@ -12,7 +12,6 @@ source_path = sys.argv[1]
 dest_path = sys.argv[2]
 resize = sys.argv[3]
 
-#convert ttt.png -resize 200x64^ -gravity center -extent 256x64 ttt-re.png
 source_path = str(Path(__file__).resolve().parent.joinpath('', sys.argv[1]))
 dest_path = str(Path(__file__).resolve().parent.joinpath('', sys.argv[2]))
 if source_path.endswith("/") == False:
