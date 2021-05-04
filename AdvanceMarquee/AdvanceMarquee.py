@@ -63,10 +63,11 @@ def show_img(path, os, device):
     img = Image.open(img_path).convert("RGBA")
     if device.width != img.width or device.height == img.height:
         img.thumbnail(device.size, Image.ANTIALIAS)
-    background = Image.new("RGB", device.size, "black")
-    posn = ((device.width - img.width) // 2, (device.height - img.height) // 2)
-    background.paste(img, posn)
-    img = ImageOps.invert(background)
+    if SCREEN == "ili9341" or SCREEN == "waveshare35a":
+        background = Image.new("RGB", device.size, "black")
+        posn = ((device.width - img.width) // 2, (device.height - img.height) // 2)
+        background.paste(img, posn)
+        img = ImageOps.invert(background)
     return img
 
 os = get_os()
