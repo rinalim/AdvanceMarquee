@@ -47,14 +47,13 @@ def get_device():
         serial = spi(port=0, device=0, gpio_DC=24, gpio_RST=25,
              reset_hold_time=0.2, reset_release_time=0.2)
         device = ili9486(serial, active_low=False, width=320, height=480,
-                 rotate=1, bus_speed_hz=500000000)
-                 #rotate=1, bus_speed_hz=31880000)
+                 rotate=1, bus_speed_hz=31880000)
     elif SCREEN == "waveshare35b":
         from luma.lcd.device import ili9486
         serial = spi(port=0, device=0, gpio_DC=24, gpio_RST=25,
              reset_hold_time=0.2, reset_release_time=0.2)
         device = ili9486(serial, active_low=False, width=320, height=480,
-                 rotate=1, bus_speed_hz=50000000)
+                 rotate=3, bus_speed_hz=50000000)
     elif SCREEN == "framebuffer":
         from luma.core import device
         device = device.linux_framebuffer("/dev/fb1")
