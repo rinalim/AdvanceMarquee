@@ -1,8 +1,7 @@
-import os, sys, time, json
+import os, sys
 import xml.etree.ElementTree as ET
 from subprocess import *
 from time import *
-from datetime import datetime
 from pathlib import Path
 from PIL import ImageFont, Image, ImageOps
 from resizeimage import resizeimage
