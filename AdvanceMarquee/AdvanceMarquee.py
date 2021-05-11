@@ -114,7 +114,7 @@ while True:
     pubpath = ""
     imgpath = ""
     if OS == "emuelec":
-        ps_grep = run_cmd("ps -ef | grep '{emuelecRunEmu' | grep -v 'grep'")
+        ps_grep = run_cmd("/usr/bin/ps -ef | grep '{emuelecRunEmu' | grep -v 'grep'")
     elif OS == "retropie":
         ps_grep = run_cmd("ps -ef | grep emulators | grep -v 'grep'")
     if len(ps_grep) > 1: # Ingame
