@@ -6,10 +6,10 @@ from datetime import datetime
 from pathlib import Path
 from PIL import ImageFont, Image, ImageOps
 from resizeimage import resizeimage
-from luma.core.interface.serial import spi
+from luma.core.interface.serial import i2c, spi
 from luma.core.render import canvas
 
-# ssd1322, ili9341, waveshare35a, waveshare35b, framebuffer
+# ssd1322, ssd1306, ili9341, waveshare35a, waveshare35b, framebuffer
 SCREEN="ssd1322"
 
 arcade = ['arcade', 'fba', 'fbneo', 'mame-advmame', 'mame-libretro', 'mame-mame4all']
@@ -35,6 +35,10 @@ def get_device():
         serial = spi()
         device = ssd1322(serial, mode="RGB")
         device.contrast(255)
+    elif SCREEN == "ssd1306":
+        from luma.oled.device import ssd1306
+        serial = i2c(port=2, address=0x3C)
+        device = ssd1306(serial, mode="RGB")
     elif SCREEN == "ili9341":
         from luma.lcd.device import ili9341
         serial = spi(port=0, device=0, gpio_DC=24, gpio_RST=25,
