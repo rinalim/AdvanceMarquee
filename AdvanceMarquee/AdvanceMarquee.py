@@ -2,7 +2,6 @@ import os, sys
 import xml.etree.ElementTree as ET
 from subprocess import *
 from time import *
-from pathlib import Path
 from PIL import ImageFont, Image, ImageOps
 from resizeimage import resizeimage
 from luma.core.interface.serial import i2c, spi
@@ -148,10 +147,12 @@ while True:
 
     if os.path.isfile(HOME + "marquee/" + sysname  + "/" + romname + ".png") == True:
         imgname = sysname + "/" + romname
+        '''
         if ingame == "*":
             publisher = get_publisher(romname)
             if os.path.isfile(HOME + "marquee/publisher/" + publisher + ".png") == True:
                 pubpath = HOME + "marquee/publisher/" + publisher + ".png"
+        '''        
     elif os.path.isfile(HOME + "marquee/system/" + sysname + ".png") == True:
         imgname = "system/" + sysname
     else:
