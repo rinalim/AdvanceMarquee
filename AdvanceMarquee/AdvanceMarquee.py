@@ -155,12 +155,8 @@ while True:
         '''        
     elif os.path.isfile(HOME + "marquee/system/" + sysname + ".png") == True:
         imgname = "system/" + sysname
-        sysname = "system"
-        romname = sysname
     else:
         imgname = "system/maintitle"
-        sysname = "system"
-        romname = "maintitle"
 
     if imgname+ingame != cur_imgname: # change marquee images
         '''
@@ -171,6 +167,6 @@ while True:
         sleep(0.2)
         '''
         cur_imgname = imgname+ingame
-        change_img(HOME + "marquee/" + sysname  + "/" + romname + ".png")
+        change_img(HOME + "marquee/" + imgname + ".png")
 
     sleep(sleep_interval)
