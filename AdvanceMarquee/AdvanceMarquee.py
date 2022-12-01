@@ -19,7 +19,7 @@ def run_cmd(cmd):
 
 def get_os():
     uname = run_cmd("uname -a")
-    if "EmuELEC" in uname:
+    if "EmuELEC" in uname or "EMUELEC" in uname:
         return "emuelec"
     elif "retropie" in uname:
         return "retropie"
