@@ -123,19 +123,32 @@ while True:
             romname = words[-1]
         else:
             if OS == "emuelec":
-                pid = words[0]
+                words = ps_grep.split(".zip")[0].split()
+                path = ""
+                index = 6
+                while True:
+                    path += words[index]
+                    index += 1
+                    if index == len(words):
+                        break
+                    path += " "
+                path = path.replace(ROMPATH,"")
+                sysname = path.split("/")[0]
+                if sysname in arcade:
+                    sysname = "arcade"
+                romname = path.split("/")[-1]
             elif OS == "retropie":
                 pid = words[1]
-            if os.path.isfile("/proc/"+pid+"/cmdline") == False:
-                continue
-            path = run_cmd("strings -n 1 /proc/"+pid+"/cmdline | grep roms")
-            path = path.replace(ROMPATH,"")
-            if len(path.replace('"','').split("/")) < 2:
-                continue
-            sysname = path.replace('"','').split("/")[0]
-            if sysname in arcade:
-                sysname = "arcade"
-            romname = path.replace('"','').split("/")[-1].split(".")[0]
+                path = run_cmd("strings -n 1 /proc/"+pid+"/cmdline | grep roms")
+                if os.path.isfile("/proc/"+pid+"/cmdline") == False:
+                    continue
+                path = path.replace(ROMPATH,"")
+                if len(path.replace('"','').split("/")) < 2:
+                    continue
+                sysname = path.replace('"','').split("/")[0]
+                if sysname in arcade:
+                    sysname = "arcade"
+                romname = path.replace('"','').split("/")[-1].split(".")[0]
     else:
         sysname = "system"
         romname = "maintitle"
