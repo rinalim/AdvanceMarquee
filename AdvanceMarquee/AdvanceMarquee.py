@@ -8,7 +8,7 @@ from luma.core.interface.serial import i2c, spi
 from luma.core.render import canvas
 
 # ssd1322, ssd1306, ili9341, waveshare35a, waveshare35b, framebuffer
-SCREEN="ssd1322"
+SCREEN="ssd1306"
 
 arcade = ['arcade', 'fba', 'fbneo', 'mame-advmame', 'mame-libretro', 'mame-mame4all']
 
@@ -123,24 +123,19 @@ while True:
             romname = words[-1]
         else:
             if OS == "emuelec":
-                path = words[6]
-                path = path.replace(ROMPATH,"")
-                sysname = path.split("/")[0]
-                if sysname in arcade:
-                    sysname = "arcade"
-                romname = path.split("/")[-1].rsplit('.', 1)[0]
+                pid = words[0]
             elif OS == "retropie":
                 pid = words[1]
-                if os.path.isfile("/proc/"+pid+"/cmdline") == False:
-                    continue
-                path = run_cmd("strings -n 1 /proc/"+pid+"/cmdline | grep roms")
-                path = path.replace(ROMPATH,"")
-                if len(path.replace('"','').split("/")) < 2:
-                    continue
-                sysname = path.replace('"','').split("/")[0]
-                if sysname in arcade:
-                    sysname = "arcade"
-                romname = path.replace('"','').split("/")[-1].split(".")[0]
+            if os.path.isfile("/proc/"+pid+"/cmdline") == False:
+                continue
+            path = run_cmd("strings -n 1 /proc/"+pid+"/cmdline | grep roms")
+            path = path.replace(ROMPATH,"")
+            if len(path.replace('"','').split("/")) < 2:
+                continue
+            sysname = path.replace('"','').split("/")[0]
+            if sysname in arcade:
+                sysname = "arcade"
+            romname = path.replace('"','').split("/")[-1].split(".")[0]
     else:
         sysname = "system"
         romname = "maintitle"
